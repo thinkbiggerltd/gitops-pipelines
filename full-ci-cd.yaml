@@ -31,7 +31,7 @@ steps:
     stage: "metadata"
     arguments:
       IMAGE:  ghcr.io/${{CF_REPO_OWNER}}/simple-web-app:latest
-      BRANCH: '${{CF_BRANCH}}'
+      BRANCH: ' ${{CF_BRANCH_TAG_NORMALIZED}}'
       REPO: '${{CF_REPO_OWNER}}/simple-web-app'
       GIT_PROVIDER_NAME: github
   # jira-issue-extractor:
