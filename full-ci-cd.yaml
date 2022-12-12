@@ -9,7 +9,7 @@ steps:
   clone:
     title: "Cloning repository"
     type: "git-clone"
-    repo: "thinkbiggerltd/gitops-app-source-code"
+    repo: "${{CF_REPO_OWNER}}/gitops-app-source-code"
     revision: '${{CF_REVISION}}'
     stage: "clone"
 
@@ -29,40 +29,40 @@ steps:
     type: image-enricher
     stage: "metadata"
     arguments:
-      IMAGE:  ghcr.io/thinkbiggerltd/simple-web-app:latest
+      IMAGE:  ghcr.io/${{CF_REPO_OWNER}}/simple-web-app:latest
       BRANCH: '${{CF_BRANCH}}'
-      REPO: 'kostis-codefresh/simple-web-app'
-      GIT_PROVIDER_NAME: github-1
-  jira-issue-extractor:
-    title: Enrich image with jira issues
-    type: jira-issue-extractor
-    stage: "metadata"
-    fail_fast: false
-    arguments:
-      IMAGE: ghcr.io/thinkbiggerltd/simple-web-app:latest
-      JIRA_PROJECT_PREFIX: 'SAAS'
-      MESSAGE: SAAS-8842
-      JIRA_HOST: codefresh-io.atlassian.net
-      JIRA_EMAIL: kostis@codefresh.io
-      JIRA_API_TOKEN: '${{JIRA_TOKEN}}'
+      REPO: '${{CF_REPO_OWNER}}/simple-web-app'
+      GIT_PROVIDER_NAME: github
+  # jira-issue-extractor:
+  #   title: Enrich image with jira issues
+  #   type: jira-issue-extractor
+  #   stage: "metadata"
+  #   fail_fast: false
+  #   arguments:
+  #     IMAGE: ghcr.io/${{CF_REPO_OWNER}}/simple-web-app:latest
+  #     JIRA_PROJECT_PREFIX: 'SAAS'
+  #     MESSAGE: SAAS-8842
+  #     JIRA_HOST: codefresh-io.atlassian.net
+  #     JIRA_EMAIL: kostis@codefresh.io
+  #     JIRA_API_TOKEN: '${{JIRA_TOKEN}}'
   clone_gitops:
     title: cloning gitops repo
     type: git-clone
     arguments:
-      repo: 'thinkbiggerltd/gitops-kubernetes-configuration'
+      repo: '${{CF_REPO_OWNER}}/gitops-kubernetes-configuration'
       revision: 'master'
     stage: "gitops"
     when:
       branch:
         only:
-          - master    
+          - master
   change_manifest:
     title: "Update k8s manifest"
     image: "mikefarah/yq:3" # The image in which command will be executed
     commands:
-      - yq w -i deployment.yml spec.template.spec.containers[0].image ghcr.io/thinkbiggerltd/simple-web-app:${{CF_SHORT_REVISION}}
+      - yq w -i deployment.yml spec.template.spec.containers[0].image ghcr.io/${{CF_REPO_OWNER}}/simple-web-app:${{CF_SHORT_REVISION}}
       - cat deployment.yml
-    working_directory: "${{clone_gitops}}" 
+    working_directory: "${{clone_gitops}}"
     stage: "gitops"
     when:
       branch:
@@ -73,7 +73,7 @@ steps:
     type: git-commit
     stage: "gitops"
     arguments:
-      repo: 'thinkbiggerltd/gitops-kubernetes-configuration'
+      repo: '${{CF_REPO_OWNER}}/gitops-kubernetes-configuration'
       git: github-1
       working_directory: '/codefresh/volume/gitops-kubernetes-configuration'
       commit_message: Updated manifest
