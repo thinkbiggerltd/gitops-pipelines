@@ -10,7 +10,8 @@ steps:
     title: "Cloning repository"
     type: "git-clone"
     repo: "${{CF_REPO_OWNER}}/gitops-app-source-code"
-    revision: '${{CF_REVISION}}'
+    # revision: '${{CF_REVISION}}'
+    revision: 'master'
     stage: "clone"
 
   build:
