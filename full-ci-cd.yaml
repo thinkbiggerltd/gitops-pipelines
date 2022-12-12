@@ -33,7 +33,7 @@ steps:
       IMAGE:  ghcr.io/${{CF_REPO_OWNER}}/simple-web-app:latest
       BRANCH: ' ${{CF_BRANCH_TAG_NORMALIZED}}'
       REPO: '${{CF_REPO_OWNER}}/simple-web-app'
-      GIT_PROVIDER_NAME: github
+      GIT_PROVIDER_NAME: github-1
   # jira-issue-extractor:
   #   title: Enrich image with jira issues
   #   type: jira-issue-extractor
